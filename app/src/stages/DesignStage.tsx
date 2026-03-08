@@ -22,6 +22,8 @@ interface Props {
 export default function DesignStage({ state, setState }: Props) {
   const [selectedTypeId, setSelectedTypeId] = React.useState(state.cardTypes[0].id);
   const selectedType = state.cardTypes.find(t => t.id === selectedTypeId);
+  const totalCards = state.cardTypes.reduce((sum, t) => sum + t.count, 0);
+  const estCostPerUnit = (totalCards * 0.14 + 4.50).toFixed(2); // ~$0.14/card + $4.50 box
 
   return (
     <div className="flex gap-8 h-full">
@@ -65,7 +67,7 @@ export default function DesignStage({ state, setState }: Props) {
 
       {/* Center: Editor */}
       <div className="flex-1 space-y-6">
-        <Card className="p-8">
+        <Card key={selectedTypeId} className="p-8">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: selectedType?.color + '20' }}>
@@ -176,24 +178,27 @@ export default function DesignStage({ state, setState }: Props) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-400">Total Cards</span>
-              <span className="text-sm font-bold">60</span>
+              <span className="text-sm font-bold">{totalCards}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-400">Unique Types</span>
-              <span className="text-sm font-bold">4</span>
+              <span className="text-sm font-bold">{state.cardTypes.length}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-400">Est. Production Cost</span>
-              <span className="text-sm font-bold text-accent">$12.45 / unit</span>
+              <span className="text-sm font-bold text-accent">${estCostPerUnit} / unit</span>
             </div>
 
             <div className="pt-4 border-t border-white/5">
               <p className="text-[10px] text-gray-500 uppercase font-bold mb-3">Distribution</p>
               <div className="h-4 w-full bg-bg rounded-full overflow-hidden flex">
-                <div className="h-full bg-blue-500" style={{ width: '15%' }} />
-                <div className="h-full bg-amber-500" style={{ width: '40%' }} />
-                <div className="h-full bg-red-500" style={{ width: '20%' }} />
-                <div className="h-full bg-emerald-500" style={{ width: '25%' }} />
+                {state.cardTypes.map(t => (
+                  <div
+                    key={t.id}
+                    className="h-full transition-all duration-300"
+                    style={{ width: `${totalCards > 0 ? (t.count / totalCards) * 100 : 0}%`, backgroundColor: t.color }}
+                  />
+                ))}
               </div>
               <div className="grid grid-cols-2 gap-2 mt-3">
                 {state.cardTypes.map(t => (

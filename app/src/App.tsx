@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Settings, 
-  Undo2, 
+import {
+  Settings,
+  Sun,
+  Moon,
+  Undo2,
   Redo2, 
   User, 
   CheckCircle2, 
@@ -116,6 +118,51 @@ export default function App() {
   const [state, setState] = useState<AppState>(INITIAL_STATE);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('beeber-theme') !== 'light';
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light-mode', !isDarkMode);
+    localStorage.setItem('beeber-theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  const currentStageIndex = STAGES.findIndex(s => s.id === state.currentStage);
+  const progressPercent = Math.round(((currentStageIndex + 1) / STAGES.length) * 100);
+  const progressLabel = STAGES[currentStageIndex]?.label ?? 'Brief';
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return;
+
+      // Number keys 1-6 jump to stages
+      if (e.key >= '1' && e.key <= '6') {
+        const stageIndex = parseInt(e.key) - 1;
+        if (stageIndex < STAGES.length) {
+          setState(prev => ({ ...prev, currentStage: STAGES[stageIndex].id }));
+        }
+        return;
+      }
+
+      // Alt+Left/Right for prev/next stage
+      if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        e.preventDefault();
+        setState(prev => {
+          const idx = STAGES.findIndex(s => s.id === prev.currentStage);
+          const next = e.key === 'ArrowRight'
+            ? Math.min(idx + 1, STAGES.length - 1)
+            : Math.max(idx - 1, 0);
+          return { ...prev, currentStage: STAGES[next].id };
+        });
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const CurrentStageComponent = {
     brief: BriefStage,
@@ -180,11 +227,11 @@ export default function App() {
           <div className="bg-surface rounded-xl p-4 border border-white/5">
             <p className="text-[10px] text-gray-500 uppercase font-bold mb-2">Project Status</p>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium">Design Phase</span>
-              <span className="text-xs text-accent">45%</span>
+              <span className="text-xs font-medium">{progressLabel} Phase</span>
+              <span className="text-xs text-accent">{progressPercent}%</span>
             </div>
             <div className="w-full h-1.5 bg-bg rounded-full overflow-hidden">
-              <div className="h-full bg-accent w-[45%]" />
+              <div className="h-full bg-accent transition-all duration-300" style={{ width: `${progressPercent}%` }} />
             </div>
           </div>
         </div>
@@ -207,6 +254,9 @@ export default function App() {
             <Button variant="ghost" size="sm"><Undo2 size={18} /></Button>
             <Button variant="ghost" size="sm"><Redo2 size={18} /></Button>
             <div className="w-px h-6 bg-white/10 mx-2" />
+            <Button variant="ghost" size="sm" onClick={() => setIsDarkMode(prev => !prev)}>
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </Button>
             <Button variant="ghost" size="sm"><Settings size={18} /></Button>
             <div className="w-8 h-8 rounded-full bg-surface-light border border-white/10 flex items-center justify-center overflow-hidden">
               <User size={16} className="text-gray-400" />

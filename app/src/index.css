@@ -68,3 +68,22 @@
   background: #4B5563;
 }
 
+/* Light mode overrides */
+:root.light-mode {
+  --color-bg: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-surface-light: #E5E7EB;
+  --color-accent: #D97706;
+  --color-accent-hover: #B45309;
+  --color-ai: #7C3AED;
+}
+
+:root.light-mode body {
+  @apply text-gray-900;
+}
+
+:root.light-mode .ai-border {
+  background: linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+              linear-gradient(135deg, #7C3AED, #C026D3) border-box;
+}
+
