@@ -305,6 +305,20 @@ Iterate (change any parameter, affected outputs regenerate)
 
 ---
 
+## Workflow Pain Points Ranked by Opportunity
+
+Based on frequency of complaints across communities (BGG, Reddit, Discord, design blogs) and alignment with AI capabilities:
+
+1. **Art generation and visual design** — Highest cost, highest frustration, most directly addressable by AI. Every persona needs this.
+2. **Prototyping speed** — The gap between "idea" and "playable thing on the table" is weeks/months. AI can compress this to hours.
+3. **Playtesting access and feedback quality** — AI simulation can't replace human playtesting but can supplement it massively (run 10,000 simulated games before the first human playtest).
+4. **Game balance** — Currently done by gut feel over hundreds of manual playtests. Automated simulation is a genuine competitive moat — no consumer tool offers this today.
+5. **Rules writing and documentation** — LLMs are well-suited to structured, clear technical writing. Converting game state to a readable rulebook is a natural AI application.
+6. **Tool fragmentation** — Designers use 4–6 separate tools. An integrated pipeline has immediate value even without AI, and AI makes each stage dramatically better.
+7. **Export and production preparation** — Print-ready files with correct bleed, crop marks, and manufacturer specs are technically tedious. Automating this removes a barrier to physical production.
+
+---
+
 ## Strategic Takeaways
 
 1. **The biggest underserved gap** is ideation-to-playtest-ready prototype. No existing tool covers this end-to-end with AI.
