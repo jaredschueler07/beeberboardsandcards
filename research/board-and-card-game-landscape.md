@@ -212,6 +212,50 @@ Board Game Geek catalogs 60+ distinct mechanics. Key ones for a generator to und
 7. **Accessible design** — Color-blind friendly, multilingual, reduced text dependency
 8. **IP crossovers** — Licensed themes from video games, anime, movies driving mainstream appeal
 9. **Digital-first card games influencing physical** — Balatro, Slay the Spire, Marvel Snap mechanics migrating to tabletop
+10. **Trick-taking renaissance** — Modern trick-taking games (Arcs, The Crew, Cat in the Box, Scout) reinventing classic mechanics with cooperation, variable trump, and spatial elements
+11. **"Big Box" economics** — Shipping costs pushing creators toward larger, $100+ games where shipping is a smaller % of total value; avg Kickstarter game weight up 1.2kg since 2015
+12. **Algorithmic balance testing** — Evolutionary Algorithms and MCTS agents (via TAG framework) enabling automated playtesting of thousands of games pre-prototype
+13. **AI Storyworlds** — Participatory narratives where game worlds respond dynamically to player choices; emerging for 2026
+14. **Boardwalk API** — Standardized API for LLMs to generate digital board game code from natural language rule descriptions
+15. **"Kidult" demographic dominance** — Adults 18–65 now primary consumers of premium tabletop; demanding complex narratives (political intrigue, climate survival, psychological depth) over generic fantasy
+
+---
+
+## 8. Algorithmic Balancing & Simulation (from PDF research)
+
+Key technical approaches for automated game balancing:
+- **Evolutionary Algorithms** — Iteratively modify game parameters while maximizing a designer-defined balance metric
+- **TAG (Tabletop Games Framework)** — Java-based simulation framework where MCTS agents play thousands of games to identify dominant strategies or broken mechanics
+- **Monte Carlo Tree Search (MCTS)** — AI agents that simulate full game trees to identify optimal play and balance issues
+- **Automa systems** — Card-driven AI opponent behavior trees for solo play, a segment seeing surging demand
+- **LLM-based rule generation** — Using the Boardwalk API to generate digital game implementations from natural language descriptions
+
+---
+
+## 9. Card UI & UX Best Practices (from PDF research)
+
+Modern card design follows digital UX principles:
+- **Upper-left corner priority** — Critical info (resource costs, action icons) placed for readability when cards are fanned in hand
+- **Information Architecture** — Rulebooks organized using IA principles; iconography heuristics for intuitive symbol comprehension
+- **Card Contrast & Spacing Systems** — High contrast between text/background; consistent spacing grids across card types
+- **Color-blind accessibility** — Redundant shape coding alongside color
+- **"Grief Layer" innovation** — Transparent overlay cards (e.g., Unconscious Mind) providing tactile/visual feedback as a mechanic
+
+---
+
+## 10. Crowdfunding Deep Dive (updated from PDF research)
+
+### Platform Comparison (2024–2025)
+
+| Platform | Total Pledged (Tabletop) | Avg. Per Project | Success Rate | Key Feature |
+|----------|-------------------------|-----------------|-------------|-------------|
+| **Gamefound** | $189.7M | $395,000 | 80%+ | Integrated VAT/tariff management, AdFound targeting |
+| **Kickstarter** | ~$220M | $41,400 (decade low) | 64% | Broad generic reach |
+| **BackerKit** | $5M (top campaign) | N/A | High | Add-on revenue concentration |
+
+- Gamefound hosted 8/10 most-funded board games in 2024
+- Kickstarter avg per project at lowest point in a decade — suggests saturation of entry-level crowdfunding
+- Shipping costs and manufacturing tariffs eroding viability of sub-$40 games
 
 ---
 
@@ -238,3 +282,22 @@ Board Game Geek catalogs 60+ distinct mechanics. Key ones for a generator to und
 - [The Game Crafter](https://www.thegamecrafter.com/)
 - [DriveThruCards](https://www.drivethrucards.com/)
 - [Icon Era — Board Game Sales Statistics 2026](https://icon-era.com/statistics/board-game-sales-statistics/)
+- [The Business Research Company — Tabletop Gaming Global Market Report](https://www.thebusinessresearchcompany.com/report/tabletop-gaming-global-market-report)
+- [Games Haven — Board Game Industry Trends 2025](https://gameshaven.co.uk/board-game-industry-trends-2025/)
+- [Amra And Elma — Board Game Marketing Statistics](https://www.amraandelma.com/board-game-marketing-statistics/)
+- [WifiTalents — Board Games Industry Statistics](https://wifitalents.com/board-games-industry-statistics/)
+- [Coherent Market Insights — Board Game Market](https://www.coherentmarketinsights.com/industry-reports/board-game-market)
+- [The Board Games Chronicle — Arcs Review](https://theboardgameschronicle.com/2025/07/13/review-arcs-conflict-collapse-in-the-reach/)
+- [IEEE CoG 2025 — Tabletop Game Balance](https://cog2025.inesc-id.pt/tabletop-game-balance/)
+- [ResearchGate — AI in Board Game Design](https://www.researchgate.net/publication/400404568_AI_in_Board_Game_Design_and_Development)
+- [Adobe — Design Trends 2025](https://www.adobe.com/express/learn/blog/design-trends-2025)
+- [UX Collective — UX in Board Game Design](https://uxdesign.cc/ux-in-board-game-design-97bfcdb1d581)
+- [Mockplus — Card UI Design Best Practices](https://www.mockplus.com/blog/post/card-ui-design)
+- [Stonemaier Games — Current State of Gamefound 2025](https://stonemaiergames.com/the-current-state-of-gamefound-2025/)
+- [Gamefound — 2025 Summary](https://gamefound.com/en/blog/post/2025-summary)
+- [Ludo.ai](https://ludo.ai/)
+- [Rosebud AI — Game Creator](https://rosebud.ai/ai-game-creator)
+- [Boardssey — Board Game Design Software](https://boardssey.com/blog/board-game-design-software)
+- [arXiv — Boardwalk Framework for Board Games with LLMs](https://arxiv.org/html/2508.16447v1)
+- [VML — The Future 100: 2026 Gaming Trends](https://www.vml.com/insight/the-future-100-2026-gaming-trends)
+- [BCG — Video Gaming Report 2026](https://www.bcg.com/publications/2025/video-gaming-report-2026-next-era-of-growth)
