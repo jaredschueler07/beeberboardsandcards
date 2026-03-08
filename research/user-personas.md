@@ -6,7 +6,27 @@
 
 ## Overview
 
-The AI board game generator app serves a spectrum of users from first-time hobbyists to experienced publishers. Each persona has distinct needs, pain points, and willingness to pay. The MVP should focus on Personas 1–2, expanding to 3–5 post-launch.
+The AI board game generator app serves a spectrum of users from first-time hobbyists to experienced publishers. Each persona has distinct needs, pain points, and willingness to pay. The MVP should focus on Personas 1–2, expanding to 3–6 post-launch.
+
+---
+
+## Designer Demographics (Industry Context)
+
+- **81%+ of credited designers** on top BGG-ranked games are white males. ~22% of designers are women (Board Game Design Lab, 2020). Less than 20% women in most design organizations.
+- **Geographic concentration**: US (40.5%), Germany (21%), France (8%), with smaller shares from Italy, UK, Canada, Czech Republic.
+- **Most are hobbyists first** — they come from playing games, not professional design. Tend to be middle-aged, college-educated, with disposable income and leisure time.
+- **Typical design timeline**: 1–3 years from idea to published game. Games go through ~100 iterations.
+- **Designer tool spending**: $15–35/month on digital tools. The real expense is art ($2,000–$10,000+) and manufacturing.
+- **An AI tool that lowers cost/time barriers could dramatically expand who can design games** — particularly women, people of color, and people in lower-income geographies.
+
+### Top Designer Complaints (from community research)
+1. Playtesting access and quality of feedback
+2. Art/illustration costs eating the budget
+3. Documentation chaos (rules in Google Docs, feedback in Discord, notes in notebooks)
+4. Balancing games is incredibly hard and tedious
+5. Rules writing — achieving clarity without ambiguity
+6. Marketing is underestimated and overwhelming
+7. Tariff/shipping uncertainty (2024–2025 specifically)
 
 ---
 
@@ -130,11 +150,44 @@ The AI board game generator app serves a spectrum of users from first-time hobby
 
 **Willingness to pay**: $5–15/month personal; $50–200/year institutional. Volume play.
 
+**Market validation**: The gamification in education market is projected to grow from **$1.14B (2024) to $18.63B by 2033** (CAGR 36.4%). 67% of US schools and 61% of Canadian schools use game-based learning. This is a very real and rapidly growing segment.
+
 ---
 
-## Persona 5: The Content Creator / Influencer (Post-MVP)
+## Persona 5: The Corporate/Events Buyer (Post-MVP)
 
-**Who they are**: YouTube/TikTok creators, streamers, and community builders who want to create custom games for their audience — either as merchandise, community engagement, or content.
+**Who they are**: HR managers, team-building facilitators, marketing agencies, event planners. Companies looking for branded or custom team-building experiences, trade show giveaways, or onboarding programs.
+
+**Goals**:
+- Create a branded board game for a corporate retreat, product launch, or trade show
+- Fast turnaround (days, not weeks)
+- Professional-quality, client-facing output
+- Branded packaging and components
+
+**Pain points**:
+- Custom game design agencies charge $5,000–$25,000+
+- Lead times are weeks to months
+- Hard to iterate on concepts
+- MOQs of 100–200+ units from manufacturers
+
+**Current workflow**: Hire agencies (ODM Group, Board Game Designs, Loopper) or buy generic team-building kits.
+
+**What they need from our app**:
+- Brand-to-game pipeline: upload logo, company values, team size → complete game concept with branded assets
+- Quick turnaround (days not weeks)
+- POD integration for physical production
+- Templates for common corporate use cases (icebreakers, trivia, strategy)
+- Professional-quality output suitable for client-facing events
+
+**Willingness to pay**: $500–5,000 per project (one-time). B2B with company budgets. High value per transaction, lower volume.
+
+**Market validation**: 65%+ of B2B buyers prioritize customizable designs. 68% of adults played board games in the last year (up from 52% pre-pandemic).
+
+---
+
+## Persona 6: The Content Creator / Influencer (Post-MVP)
+
+**Who they are**: YouTube/TikTok creators, streamers, and community builders in the tabletop space who want to create custom games for their audience — either as merchandise, community engagement, or content. Also includes game cafe owners and event organizers.
 
 **Goals**:
 - Create branded games featuring their community/IP
@@ -236,3 +289,45 @@ Iterate (change any parameter, affected outputs regenerate)
 | **Education** | Persona 4 | $50–200/year | Templates, bulk student access, simplified UI |
 
 **Key insight**: Art generation alone replaces $2,000–$20,000 in commissioning costs. Even at $50/month, the ROI for Persona 2 is enormous — this should be the anchor pricing message.
+
+---
+
+## Hobbyist-to-Professional Spectrum
+
+| Dimension | Hobbyist | Serious Indie | Professional Publisher |
+|-----------|----------|---------------|----------------------|
+| **Games/year** | 0–1 (may never finish) | 1–3 in development | 2–5 published |
+| **Budget** | $0–500 | $1,000–15,000 | $10,000–100,000+ |
+| **Art needs** | "Good enough" AI art is fine | AI for prototyping, hire humans for final | Need art direction tools, not replacement |
+| **Key need** | Hand-holding, templates, "just make it work" | Speed, iteration, playtesting tools | Workflow integration, team features, evaluation tools |
+| **Publishing path** | Share with friends, maybe POD | Kickstarter or pitch to publishers | Direct to retail/distribution |
+| **Tool budget** | $0–30/month | $20–50/month | $100–500/month |
+
+---
+
+## Strategic Takeaways
+
+1. **The biggest underserved gap** is ideation-to-playtest-ready prototype. No existing tool covers this end-to-end with AI.
+2. **Art cost is the #1 financial pain point** across all designer personas. AI art generation for prototyping would be the single highest-value feature.
+3. **The serious indie designer (Persona 2) is the ideal early adopter** — they have budget, pain, and are active in communities that amplify word-of-mouth.
+4. **The educator segment is enormous and validated** ($1B+ market growing at 36% CAGR) but requires radically simpler UX. Consider as a separate product mode.
+5. **The corporate segment is high-value per transaction** ($500–5,000+) but low-volume B2B. Good for revenue, not for growth metrics.
+6. **The hobbyist first-timer is the largest addressable audience** but hardest to monetize. Freemium with paid exports/premium art is the natural fit.
+7. **Tabletop Simulator export is table-stakes** for any serious design tool — it's the de facto standard for remote playtesting.
+8. **An AI tool that lowers barriers could diversify who designs games** — expanding the 81% white male base by making design accessible to underrepresented groups.
+
+---
+
+## Sources
+
+- [Pine Island Games — Demographics and Design](https://www.pineislandgames.com/blog/demographicsanddesign)
+- [Analog Game Studies — Gender and Racial Representation](https://analoggamestudies.org/2018/12/assessing-gender-and-racial-representation-in-top-rated-boardgamegeek-games/)
+- [Stonemaier Games — Demographic Survey](https://stonemaiergames.com/5-surprises-from-our-demographic-survey/)
+- [Board Game Design Lab — How to Design](https://boardgamedesignlab.com/how-to-design-a-board-game/)
+- [Brandon the Game Dev — Start to Finish](https://brandonthegamedev.com/start-to-finish-publish-and-sell-your-first-board-game/)
+- [LaunchBoom — Cost to Publish a Board Game 2026](https://www.launchboom.com/game-tips/cost-to-publish-a-board-game)
+- [The City of Games — First-Time Creator Stats](https://thecityofkings.com/news/stats-from-successful-first-time-creators/)
+- [Kickstarter — 2024 Was a Big Year for Games](https://updates.kickstarter.com/kickstarter-biggest-platform-for-games/)
+- [Market Data Forecast — Gamification Education Market](https://www.marketdataforecast.com/market-reports/gamification-education-market)
+- [Pine Island Games — Illustration Pricing Guide](https://www.pineislandgames.com/blog/illustration-a-comprehensive-guide)
+- [Streamlined Gaming — Best Board Game Design Sites](https://streamlinedgaming.com/best-board-game-design-sites-and-forums-for-creators/)
