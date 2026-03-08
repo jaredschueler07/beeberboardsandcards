@@ -1,4 +1,4 @@
-"""AI generation endpoints — currently return mock data, ready for real AI integration."""
+"""AI generation endpoints — concepts use Claude, others are mock stubs."""
 
 import random
 import uuid
@@ -14,22 +14,9 @@ from app.schemas.project import (
     GenerateConceptsRequest,
     RunSimulationRequest,
 )
+from app.services.concept_generator import generate_concepts as generate_concepts_service
 
 router = APIRouter(prefix="/generate", tags=["generate"])
-
-# Mechanic pools for mock generation
-MECHANICS = [
-    "Hand Management", "Deck Building", "Worker Placement", "Area Control",
-    "Push Your Luck", "Cooperative", "Engine Building", "Drafting",
-    "Set Collection", "Trick-Taking", "Tableau Building", "Resource Management",
-    "Action Points", "Dice Rolling", "Tile Placement", "Route Building",
-]
-
-COMPARABLE_GAMES = [
-    "Pandemic", "Gloomhaven", "Terraforming Mars", "Wingspan", "Arkham Horror",
-    "Spirit Island", "7 Wonders", "Dominion", "Azul", "Catan", "Root",
-    "Everdell", "The Crew", "Arcs", "Brass: Birmingham",
-]
 
 
 @router.post("/{project_id}/concepts", response_model=list[GameConceptOut])
@@ -40,25 +27,30 @@ async def generate_concepts(
 ):
     """Generate game concept suggestions from a natural language brief.
 
-    TODO: Replace mock logic with Claude API call using structured output.
+    Uses Claude API if ANTHROPIC_API_KEY is set, otherwise returns mock data.
+    Persists generated concepts to the database.
     """
-    concepts = []
-    for i in range(data.count):
-        mechanics = random.sample(MECHANICS, k=3)
-        comparables = random.sample(COMPARABLE_GAMES, k=2)
-        concept = GameConcept(
-            id=str(uuid.uuid4()),
+    results = await generate_concepts_service(
+        brief=data.brief,
+        brief_settings=data.brief_settings,
+        count=data.count,
+    )
+
+    # Persist to database
+    for concept_out in results:
+        db_concept = GameConcept(
+            id=concept_out.id,
             project_id=project_id,
-            title=f"Concept {i + 1}: {data.brief_settings.theme}",
-            description=f"An AI-generated concept based on: {data.brief[:100]}",
-            mechanics=mechanics,
-            comparable_games=comparables,
-            score=round(random.uniform(70, 98), 1),
+            title=concept_out.title,
+            description=concept_out.description,
+            mechanics=concept_out.mechanics,
+            comparable_games=concept_out.comparable_games,
+            score=concept_out.score,
         )
-        db.add(concept)
-        concepts.append(concept)
+        db.add(db_concept)
     await db.commit()
-    return concepts
+
+    return results
 
 
 @router.post("/{project_id}/cards")

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { Sparkles, ChevronRight, Loader2 } from 'lucide-react';
 import { AppState, Complexity, GameType } from '../types';
 import { Button, Card, Badge, cn } from '../components/UI';
+import { api } from '../api';
 
 interface Props {
   state: AppState;
@@ -19,9 +20,49 @@ const THEMES = ['Deep Sea Exploration', 'Eldritch Horror', 'Steampunk', 'Cyberpu
 export default function BriefStage({ state, setState }: Props) {
   const isEmpty = state.brief.length < 10;
   const settings = state.briefSettings;
+  const [isGenerating, setIsGenerating] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const updateSettings = (patch: Partial<AppState['briefSettings']>) => {
     setState(prev => ({ ...prev, briefSettings: { ...prev.briefSettings, ...patch } }));
+  };
+
+  const handleGenerateConcepts = async () => {
+    if (isEmpty) return;
+    setIsGenerating(true);
+    setError(null);
+    try {
+      // Use a placeholder project ID for now — will use real project ID once persistence is wired
+      const projectId = 'draft';
+      const concepts = await api.generateConcepts(projectId, {
+        brief: state.brief,
+        brief_settings: {
+          theme: settings.theme,
+          playerCountMin: settings.playerCountMin,
+          playerCountMax: settings.playerCountMax,
+          playTime: settings.playTime,
+          complexity: settings.complexity,
+          gameType: settings.gameType,
+        },
+        count: 3,
+      });
+      setState(prev => ({
+        ...prev,
+        concepts: concepts.map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          description: c.description,
+          mechanics: c.mechanics,
+          comparableGames: c.comparable_games ?? c.comparableGames ?? [],
+          score: c.score,
+        })),
+        selectedConceptId: concepts[0]?.id,
+      }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate concepts');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -45,13 +86,25 @@ export default function BriefStage({ state, setState }: Props) {
               </div>
             )}
             <div className="absolute bottom-4 right-4 flex gap-2">
-              <Button variant="ai" size="sm">
+              <Button variant="ai" size="sm" disabled={isGenerating}>
                 <Sparkles size={14} className="mr-2" />
                 Refine with AI
               </Button>
-              <Button size="sm">Generate Concepts</Button>
+              <Button size="sm" onClick={handleGenerateConcepts} disabled={isEmpty || isGenerating}>
+                {isGenerating ? (
+                  <Loader2 size={14} className="mr-2 animate-spin" />
+                ) : (
+                  <Sparkles size={14} className="mr-2" />
+                )}
+                {isGenerating ? 'Generating...' : 'Generate Concepts'}
+              </Button>
             </div>
           </div>
+          {error && (
+            <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400">
+              {error}
+            </div>
+          )}
         </section>
 
         <section className="space-y-4">
