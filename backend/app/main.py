@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine
 from app.models.project import Base
-from app.routers import generate, projects
+from app.routers import export, generate, projects
 
 
 @asynccontextmanager
@@ -32,6 +32,7 @@ app.add_middleware(
 
 app.include_router(projects.router, prefix="/api")
 app.include_router(generate.router, prefix="/api")
+app.include_router(export.router, prefix="/api")
 
 
 @app.get("/api/health")

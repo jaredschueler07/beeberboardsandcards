@@ -58,7 +58,18 @@ export const api = {
     request<any[]>(`/generate/${projectId}/concepts`, {
       method: 'POST', body: JSON.stringify(data),
     }),
-  generateCards: (projectId: string, data: { concept_id: string; card_type_id: string; count?: number }) =>
+  generateCardTypes: (projectId: string, data: {
+    concept_title: string; concept_description?: string;
+    mechanics?: string[]; brief_settings?: any; count?: number;
+  }) =>
+    request<any[]>(`/generate/${projectId}/card-types`, {
+      method: 'POST', body: JSON.stringify(data),
+    }),
+  generateCards: (projectId: string, data: {
+    concept_title?: string; concept_description?: string;
+    mechanics?: string[]; type_id: string; type_name: string;
+    type_count?: number; count?: number;
+  }) =>
     request<any[]>(`/generate/${projectId}/cards`, {
       method: 'POST', body: JSON.stringify(data),
     }),
@@ -66,6 +77,20 @@ export const api = {
     request<any>(`/generate/${projectId}/simulate`, {
       method: 'POST', body: JSON.stringify(data),
     }),
+
+  // Export
+  exportPnPPdf: async (projectId: string, data: { paper_size?: string; show_crop_marks?: boolean }) => {
+    const res = await fetch(`${API_BASE}/export/${projectId}/pnp-pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`API ${res.status}: ${body}`);
+    }
+    return res.blob();
+  },
 
   // Health
   health: () => request<{ status: string }>('/health'),

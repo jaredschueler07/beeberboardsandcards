@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Settings,
   Sun,
   Moon,
   Undo2,
-  Redo2, 
-  User, 
-  CheckCircle2, 
+  Redo2,
+  User,
+  CheckCircle2,
   MessageSquare,
   ChevronUp,
   ChevronDown,
   Send,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import { Stage, AppState, Card as GameCard } from './types';
 import { STAGES, DESIGN_SYSTEM } from './constants';
 import { Button, cn } from './components/UI';
+import { api } from './api';
 
 // Stages
 import BriefStage from './stages/BriefStage';
@@ -26,10 +28,10 @@ import ArtStage from './stages/ArtStage';
 import LayoutStage from './stages/LayoutStage';
 import ExportStage from './stages/ExportStage';
 
-const INITIAL_STATE: AppState = {
+const EMPTY_STATE: AppState = {
   currentStage: 'brief',
-  projectName: 'Abyssal Echoes',
-  brief: 'A cooperative survival card game for 2-4 players set in flooded 1920s London, 45 minutes, medium complexity',
+  projectName: 'Untitled Game',
+  brief: '',
   briefSettings: {
     theme: 'Deep Sea Exploration',
     playerCountMin: 2,
@@ -38,92 +40,143 @@ const INITIAL_STATE: AppState = {
     complexity: 'medium',
     gameType: 'card',
   },
-  concepts: [
-    {
-      id: '1',
-      title: 'The Drowned Archive',
-      description: 'Players are scholars salvaging forbidden knowledge from submerged libraries while avoiding eldritch horrors.',
-      mechanics: ['Hand Management', 'Push Your Luck', 'Cooperative'],
-      comparableGames: ['Arkham Horror', 'The Crew'],
-      score: 92
-    },
-    {
-      id: '2',
-      title: 'Steam & Silt',
-      description: 'A resource management race to build a submersible before the rising tides consume the last dry land.',
-      mechanics: ['Engine Building', 'Resource Management', 'Race'],
-      comparableGames: ['Terraforming Mars', '7 Wonders'],
-      score: 85
-    }
-  ],
-  selectedConceptId: '1',
-  cardTypes: [
-    { id: '1', name: 'Scholar', color: '#3B82F6', icon: 'user', count: 4 },
-    { id: '2', name: 'Artifact', color: '#F59E0B', icon: 'gem', count: 24 },
-    { id: '3', name: 'Horror', color: '#EF4444', icon: 'skull', count: 12 },
-    { id: '4', name: 'Event', color: '#10B981', icon: 'zap', count: 20 },
-  ],
-  cards: [
-    {
-      id: 'c1',
-      typeId: '1',
-      name: 'Dr. Aris Thorne',
-      cost: 0,
-      stats: { HP: 5, Intellect: 4 },
-      effect: 'Once per turn, you may look at the top 3 cards of the Archive deck.',
-      flavorText: 'The water hides more than just secrets.',
-      artUrl: 'https://picsum.photos/seed/scholar/400/600'
-    },
-    {
-      id: 'c2',
-      typeId: '2',
-      name: 'Rusty Sextant',
-      cost: 2,
-      stats: { Range: 2 },
-      effect: 'Gain +1 Intellect while exploring submerged locations.',
-      flavorText: 'It still points true, even under fifty fathoms.',
-      artUrl: 'https://picsum.photos/seed/artifact/400/600'
-    }
-  ],
-  simulationData: {
-    winRate: [
-      { position: 'P1', rate: 48 },
-      { position: 'P2', rate: 52 },
-      { position: 'P3', rate: 45 },
-      { position: 'P4', rate: 42 },
-    ],
-    usage: [
-      { name: 'Artifacts', value: 65 },
-      { name: 'Horrors', value: 25 },
-      { name: 'Events', value: 10 },
-    ],
-    length: [
-      { minutes: 30, frequency: 10 },
-      { minutes: 40, frequency: 45 },
-      { minutes: 50, frequency: 30 },
-      { minutes: 60, frequency: 15 },
-    ],
-    comeback: [
-      { turn: 3, rate: 12 },
-      { turn: 5, rate: 28 },
-      { turn: 7, rate: 45 },
-      { turn: 9, rate: 38 },
-      { turn: 11, rate: 22 },
-      { turn: 13, rate: 15 },
-    ]
-  }
+  concepts: [],
+  selectedConceptId: undefined,
+  cardTypes: [],
+  cards: [],
+  simulationData: undefined,
 };
 
+/** Map a backend project response to frontend AppState */
+function projectToState(p: any): AppState {
+  const bs = p.brief_settings ?? {};
+  return {
+    projectId: p.id,
+    currentStage: (p.current_stage ?? 'brief') as AppState['currentStage'],
+    projectName: p.name ?? 'Untitled Game',
+    brief: p.brief ?? '',
+    briefSettings: {
+      theme: bs.theme ?? '',
+      playerCountMin: bs.playerCountMin ?? 2,
+      playerCountMax: bs.playerCountMax ?? 4,
+      playTime: bs.playTime ?? 45,
+      complexity: bs.complexity ?? 'medium',
+      gameType: bs.gameType ?? 'card',
+    },
+    concepts: (p.concepts ?? []).map((c: any) => ({
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      mechanics: c.mechanics ?? [],
+      comparableGames: c.comparable_games ?? c.comparableGames ?? [],
+      score: c.score ?? 0,
+    })),
+    selectedConceptId: p.selected_concept_id ?? undefined,
+    cardTypes: (p.card_types ?? []).map((t: any) => ({
+      id: t.id,
+      name: t.name,
+      color: t.color ?? '#3B82F6',
+      icon: t.icon ?? 'layers',
+      count: t.count ?? 1,
+    })),
+    cards: (p.cards ?? []).map((c: any) => ({
+      id: c.id,
+      typeId: c.type_id ?? c.typeId,
+      name: c.name,
+      cost: c.cost ?? 0,
+      stats: c.stats ?? {},
+      effect: c.effect ?? '',
+      flavorText: c.flavor_text ?? c.flavorText ?? '',
+      artUrl: c.art_url ?? c.artUrl ?? undefined,
+    })),
+    simulationData: p.balance_report ?? undefined,
+    styleGuide: p.style_guide ?? undefined,
+  };
+}
+
 export default function App() {
-  const [state, setState] = useState<AppState>(INITIAL_STATE);
+  const [state, setState] = useState<AppState>(EMPTY_STATE);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('beeber-theme') !== 'light';
     }
     return true;
   });
+
+  // Load or create project on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        // Check for saved project ID in localStorage
+        const savedId = localStorage.getItem('beeber-project-id');
+        if (savedId) {
+          try {
+            const project = await api.getProject(savedId);
+            setState(projectToState(project));
+            setIsLoading(false);
+            return;
+          } catch {
+            // Project not found — create a new one
+          }
+        }
+        // Create new project
+        const project = await api.createProject({ name: 'Untitled Game' });
+        localStorage.setItem('beeber-project-id', project.id);
+        setState(projectToState(project));
+      } catch {
+        // Backend unavailable — work offline with empty state
+        console.warn('Backend unavailable — working offline');
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, []);
+
+  // Debounced auto-save to backend
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const prevStateRef = useRef<string>('');
+
+  const saveToBackend = useCallback(async (s: AppState) => {
+    if (!s.projectId) return;
+    setSaveStatus('saving');
+    try {
+      await api.updateProject(s.projectId, {
+        name: s.projectName,
+        brief: s.brief,
+        brief_settings: s.briefSettings,
+        current_stage: s.currentStage,
+        selected_concept_id: s.selectedConceptId ?? null,
+        balance_report: s.simulationData ?? null,
+        style_guide: s.styleGuide ?? null,
+      });
+      setSaveStatus('saved');
+    } catch {
+      setSaveStatus('error');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
+    // Only save when saveable fields change
+    const key = JSON.stringify({
+      name: state.projectName,
+      brief: state.brief,
+      briefSettings: state.briefSettings,
+      currentStage: state.currentStage,
+      selectedConceptId: state.selectedConceptId,
+      simulationData: state.simulationData,
+    });
+    if (key === prevStateRef.current) return;
+    prevStateRef.current = key;
+
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => saveToBackend(state), 1000);
+    return () => clearTimeout(saveTimerRef.current);
+  }, [state, isLoading, saveToBackend]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('light-mode', !isDarkMode);
@@ -172,6 +225,17 @@ export default function App() {
     layout: LayoutStage,
     export: ExportStage,
   }[state.currentStage];
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full bg-bg items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-8 h-8 text-accent animate-spin mx-auto" />
+          <p className="text-sm text-gray-500">Loading project...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full bg-bg overflow-hidden">
@@ -247,7 +311,14 @@ export default function App() {
               onChange={(e) => setState(prev => ({ ...prev, projectName: e.target.value }))}
               className="bg-transparent border-none focus:ring-0 font-bold text-lg text-white w-48 hover:bg-white/5 rounded px-2 py-1 transition-colors"
             />
-            <span className="text-[10px] bg-white/5 px-2 py-1 rounded text-gray-500 font-bold uppercase">Saved</span>
+            <span className={cn(
+              "text-[10px] px-2 py-1 rounded font-bold uppercase",
+              saveStatus === 'saved' ? 'bg-white/5 text-gray-500' :
+              saveStatus === 'saving' ? 'bg-accent/10 text-accent' :
+              'bg-red-500/10 text-red-400'
+            )}>
+              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'error' ? 'Save failed' : 'Saved'}
+            </span>
           </div>
 
           <div className="flex items-center gap-2">

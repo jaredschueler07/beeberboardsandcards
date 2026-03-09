@@ -48,6 +48,7 @@ export interface SimulationData {
 }
 
 export interface AppState {
+  projectId?: string;
   currentStage: Stage;
   projectName: string;
   brief: string;

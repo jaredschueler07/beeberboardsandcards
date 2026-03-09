@@ -32,8 +32,7 @@ export default function BriefStage({ state, setState }: Props) {
     setIsGenerating(true);
     setError(null);
     try {
-      // Use a placeholder project ID for now — will use real project ID once persistence is wired
-      const projectId = 'draft';
+      const projectId = state.projectId ?? 'draft';
       const concepts = await api.generateConcepts(projectId, {
         brief: state.brief,
         brief_settings: {

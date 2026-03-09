@@ -129,9 +129,21 @@ class GenerateConceptsRequest(BaseModel):
     count: int = 3
 
 
+class GenerateCardTypesRequest(BaseModel):
+    concept_title: str
+    concept_description: str = ""
+    mechanics: list[str] = []
+    brief_settings: BriefSettings = BriefSettings()
+    count: int = 4
+
+
 class GenerateCardsRequest(BaseModel):
-    concept_id: str
-    card_type_id: str
+    concept_title: str = ""
+    concept_description: str = ""
+    mechanics: list[str] = []
+    type_id: str
+    type_name: str
+    type_count: int = 10
     count: int = 5
 
 
