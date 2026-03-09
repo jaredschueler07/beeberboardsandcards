@@ -26,6 +26,7 @@ export default function ExportStage({ state, setState }: Props) {
   const [paperSize, setPaperSize] = React.useState<'letter' | 'a4'>('letter');
   const [showCropMarks, setShowCropMarks] = React.useState(true);
   const [isExporting, setIsExporting] = React.useState(false);
+  const [isExportingTts, setIsExportingTts] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [lastExport, setLastExport] = React.useState<{ name: string; size: string; time: Date } | null>(null);
 
@@ -61,6 +62,32 @@ export default function ExportStage({ state, setState }: Props) {
       setError(err instanceof Error ? err.message : 'Export failed');
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleExportTts = async () => {
+    if (!state.projectId) return;
+    setIsExportingTts(true);
+    setError(null);
+    try {
+      const blob = await api.exportTtsJson(state.projectId, {});
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const filename = `${state.projectName.replace(/\s+/g, '_')}_TTS.zip`;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+      setLastExport({ name: filename, size: `${sizeMB} MB`, time: new Date() });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Export failed');
+    } finally {
+      setIsExportingTts(false);
     }
   };
 
@@ -143,19 +170,37 @@ export default function ExportStage({ state, setState }: Props) {
               </div>
             </Card>
 
-            {/* TTS — placeholder */}
-            <Card className="group cursor-pointer hover:border-accent/50 transition-all opacity-60">
+            {/* TTS — functional */}
+            <Card className="group cursor-pointer hover:border-accent transition-all hover:scale-[1.02] active:scale-[0.98]">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-surface-light flex items-center justify-center text-purple-400">
+                  <div className="w-12 h-12 rounded-xl bg-surface-light flex items-center justify-center text-purple-400 transition-colors group-hover:bg-accent/10">
                     <Monitor size={24} />
                   </div>
-                  <Badge>Coming Soon</Badge>
+                  <Badge>Digital</Badge>
                 </div>
                 <h3 className="text-lg font-bold mb-2">Tabletop Simulator</h3>
                 <p className="text-xs text-gray-400 leading-relaxed mb-3">
-                  Generate a JSON mod file and asset cloud links for digital playtesting.
+                  Download a ZIP with a card sheet PNG and TTS-compatible JSON save file. Drop save.json into your TTS Saved Objects folder.
                 </p>
+                <Button
+                  size="sm"
+                  className="w-full justify-between"
+                  onClick={handleExportTts}
+                  disabled={isExportingTts || !hasCards}
+                >
+                  {isExportingTts ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 size={14} className="animate-spin" />
+                      Generating TTS Bundle...
+                    </span>
+                  ) : (
+                    <>
+                      {hasCards ? 'Download TTS Bundle' : 'Generate cards first'}
+                      <Download size={16} />
+                    </>
+                  )}
+                </Button>
               </div>
             </Card>
 

@@ -92,6 +92,19 @@ export const api = {
     return res.blob();
   },
 
+  exportTtsJson: async (projectId: string, data: { card_sheet_url?: string; back_url?: string }) => {
+    const res = await fetch(`${API_BASE}/export/${projectId}/tts-json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`API ${res.status}: ${body}`);
+    }
+    return res.blob();
+  },
+
   // Health
   health: () => request<{ status: string }>('/health'),
 };
