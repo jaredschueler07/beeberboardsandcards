@@ -1,7 +1,8 @@
-import React from 'react';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sparkles, ChevronRight, Loader2 } from 'lucide-react';
 import { AppState, Complexity, GameType } from '../types';
 import { Button, Card, Badge, cn } from '../components/UI';
+import { generateConcepts } from '../services/gemini';
 
 interface Props {
   state: AppState;
@@ -17,11 +18,31 @@ const COMPLEXITY_LABELS: Record<Complexity, string> = {
 const THEMES = ['Deep Sea Exploration', 'Eldritch Horror', 'Steampunk', 'Cyberpunk', 'Post-Apocalyptic', 'Fantasy'];
 
 export default function BriefStage({ state, setState }: Props) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const isEmpty = state.brief.length < 10;
   const settings = state.briefSettings;
 
   const updateSettings = (patch: Partial<AppState['briefSettings']>) => {
     setState(prev => ({ ...prev, briefSettings: { ...prev.briefSettings, ...patch } }));
+  };
+
+  const handleGenerateConcepts = async () => {
+    if (isEmpty) return;
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const concepts = await generateConcepts(state.brief, state.briefSettings);
+      setState(prev => ({
+        ...prev,
+        concepts,
+        selectedConceptId: concepts[0]?.id,
+      }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate concepts');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -45,14 +66,27 @@ export default function BriefStage({ state, setState }: Props) {
               </div>
             )}
             <div className="absolute bottom-4 right-4 flex gap-2">
-              <Button variant="ai" size="sm">
-                <Sparkles size={14} className="mr-2" />
-                Refine with AI
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleGenerateConcepts}
+                disabled={isEmpty || isGenerating}
+              >
+                {isGenerating ? (
+                  <><Loader2 size={14} className="mr-2 animate-spin" />Generating...</>
+                ) : (
+                  <><Sparkles size={14} className="mr-2" />Generate Concepts</>
+                )}
               </Button>
-              <Button size="sm">Generate Concepts</Button>
             </div>
           </div>
         </section>
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-400">
+            {error}
+          </div>
+        )}
 
         <section className="space-y-4">
           <div className="flex items-center justify-between">
